@@ -15,7 +15,7 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000;
 
 // Set view engine to EJS
 app.set("view engine", "ejs");
@@ -79,14 +79,15 @@ async function ensureSchema() {
   }
 }
 
-app.listen(port, async () => {
+app.listen(port, "0.0.0.0", async () => {
   try {
     await connect();
     await ensureSchema();
-    console.log(`Listening on port ${port}`);
+    console.log(`Server running on http://0.0.0.0:${port}`);
   } catch (error) {
     console.error("Database connection failed:", error);
-    process.exit(1);
+    console.log("Server starting without database connection...");
+    console.log(`Server running on http://0.0.0.0:${port}`);
   }
 });
 

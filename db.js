@@ -1,10 +1,14 @@
 import mysql from "mysql2/promise";
-// Create MySQL connection pool
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Create MySQL connection pool with environment variables
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",          // default MySQL user (change if yours is different)
-  password: "Nilesh@123",// your MySQL password
-  database: "Ngo_website", // create this DB in MySQL
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "Ngo_website",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
