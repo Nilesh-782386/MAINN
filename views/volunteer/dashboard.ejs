@@ -12,60 +12,165 @@
 <body class="volunteer-page">
   <%- include("../partials/navbar.ejs", { user, ngo, volunteer }) %>
   <main class="container" style="padding: 24px;">
-    <h1>Volunteer Dashboard</h1>
-    <p>Welcome, <%= volunteer && volunteer.name ? volunteer.name : 'Volunteer' %>.</p>
+    <div class="dashboard-header">
+      <h1>Volunteer Dashboard</h1>
+      <p class="welcome-text">Welcome back, <strong><%= volunteer && volunteer.name ? volunteer.name : 'Volunteer' %></strong>! Ready to make a difference today?</p>
+    </div>
+    
     <section class="dashboard-section">
-      <h2>Open Requests Near You</h2>
-      <div id="open-requests"></div>
+      <div class="section-title">
+        <h2><i class="fa-solid fa-heart" style="color: #16a34a; margin-right: 8px;"></i>Open Requests Near You</h2>
+        <small id="available-count">Loading...</small>
+      </div>
+      <div id="open-requests" class="request-list"></div>
     </section>
+    
     <section class="dashboard-section">
-      <h2>Your Assignments</h2>
-      <div id="my-requests"></div>
+      <div class="section-title">
+        <h2><i class="fa-solid fa-handshake" style="color: #2563eb; margin-right: 8px;"></i>Your Assignments</h2>
+        <small id="assigned-count">Loading...</small>
+      </div>
+      <div id="my-requests" class="request-list"></div>
     </section>
   </main>
   <script>
+    let refreshInterval;
+    
     async function fetchData() {
-      const res = await fetch('/volunteer-dashboard-data');
-      const data = await res.json();
-      renderOpen(data.availableDonations || []);
-      renderMine(data.myDonations || []);
+      try {
+        const res = await fetch('/volunteer-dashboard-data');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        renderOpen(data.availableDonations || []);
+        renderMine(data.myDonations || []);
+        
+        // Show success indicator
+        showNotification('Dashboard updated', 'success');
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+        showNotification('Failed to update dashboard', 'error');
+      }
     }
+    
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 1000;
+        padding: 12px 16px; border-radius: 8px; color: white;
+        font-weight: 500; animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? '#16a34a' : type === 'error' ? '#dc2626' : '#2563eb'};
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease forwards';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    function startAutoRefresh() {
+      // Refresh every 30 seconds
+      refreshInterval = setInterval(fetchData, 30000);
+    }
+    
+    function stopAutoRefresh() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    }
+    
+    // Add visibility change listener to pause/resume auto-refresh
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopAutoRefresh();
+      } else {
+        startAutoRefresh();
+        fetchData(); // Refresh immediately when tab becomes visible
+      }
+    });
 
     function renderOpen(list){
       const el = document.getElementById('open-requests');
-      if(!list.length){ el.innerHTML = '<p>No open requests.</p>'; return; }
+      const countEl = document.getElementById('available-count');
+      countEl.textContent = `${list.length} request${list.length !== 1 ? 's' : ''} available`;
+      
+      if(!list.length){ 
+        el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-search" style="font-size: 2rem; color: #d1d5db; margin-bottom: 12px;"></i><p>No open requests near you right now.</p><small class="helper">Check back later for new opportunities to help!</small></div>'; 
+        return; 
+      }
       el.innerHTML = list.map(r => card(r, true)).join('');
     }
     function renderMine(list){
       const el = document.getElementById('my-requests');
-      if(!list.length){ el.innerHTML = '<p>No assignments yet.</p>'; return; }
+      const countEl = document.getElementById('assigned-count');
+      countEl.textContent = `${list.length} assignment${list.length !== 1 ? 's' : ''}`;
+      
+      if(!list.length){ 
+        el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-clipboard-list" style="font-size: 2rem; color: #d1d5db; margin-bottom: 12px;"></i><p>No active assignments.</p><small class="helper">Accept a request above to get started!</small></div>'; 
+        return; 
+      }
       el.innerHTML = list.map(r => card(r, false)).join('');
     }
     function card(r, canAccept){
       const donor = r.donor_name ? (r.donor_name[0] + '***') : 'Donor';
       const urgency = r.urgency || 'normal';
-      const badge = urgency === 'emergency' ? 'style="color:#b91c1c;font-weight:700;"' : '';
+      const statusText = r.status || 'pending';
+      const donationType = r.donation_type || r.type || 'Donation';
+      const donationIcon = getDonationIcon(donationType);
+      
       return `
-        <div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div><strong>${r.donation_type || r.type || 'Donation'}</strong> <span ${badge}>${urgency}</span></div>
-              <div>Donor: ${donor}</div>
-              <div>Pickup: ${r.address || r.pickup_address || r.city || ''}</div>
-              <div>NGO: ${r.ngo_name || '—'}</div>
+        <div class="request-card" data-id="${r.id}">
+          <div class="card-content">
+            <div class="card-header">
+              <div class="title">
+                <i class="${donationIcon}" style="margin-right: 8px;"></i>
+                ${donationType}
+              </div>
+              <span class="badge ${urgency}">${urgency}</span>
             </div>
-            <div>
-              ${canAccept ? `<button onclick="accept(${r.id})" class="btn btn-primary">Accept</button>` : ''}
+            
+            <div class="card-details">
+              <div class="meta"><i class="fa-solid fa-user"></i> Donor: ${donor}</div>
+              <div class="meta"><i class="fa-solid fa-location-dot"></i> ${r.address || r.pickup_address || r.city || 'Location not specified'}</div>
+              ${r.ngo_name ? `<div class="meta"><i class="fa-solid fa-building"></i> NGO: ${r.ngo_name}</div>` : ''}
+              ${!canAccept ? `<div class="meta"><i class="fa-solid fa-info-circle"></i> Status: <span class="status-pill ${statusText}">${statusText.replace('_', ' ')}</span></div>` : ''}
             </div>
           </div>
-          ${!canAccept ? `
-          <div style="margin-top:8px;">
-            <form onsubmit="return uploadProof(event, ${r.id})" enctype="multipart/form-data">
-              <input type="file" name="proof" accept="image/*" required />
-              <button type="submit" class="btn btn-primary">Upload Proof & Mark Delivered</button>
-            </form>
-          </div>` : ''}
+          
+          <div class="actions">
+            ${canAccept ? `
+              <button onclick="accept(${r.id})" class="btn-accept">
+                <i class="fa-solid fa-check"></i> Accept
+              </button>
+            ` : `
+              <div class="proof-upload">
+                <form onsubmit="return uploadProof(event, ${r.id})" enctype="multipart/form-data" style="display: flex; gap: 8px; align-items: center;">
+                  <input type="file" name="proof" accept="image/*" required title="Upload proof of delivery" />
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-upload"></i> Mark Delivered
+                  </button>
+                </form>
+              </div>
+            `}
+          </div>
         </div>`;
+    }
+    
+    function getDonationIcon(type) {
+      const iconMap = {
+        'food': 'fa-solid fa-utensils',
+        'clothes': 'fa-solid fa-tshirt', 
+        'books': 'fa-solid fa-book',
+        'toys': 'fa-solid fa-puzzle-piece',
+        'medicine': 'fa-solid fa-pills',
+        'electronics': 'fa-solid fa-laptop',
+        'furniture': 'fa-solid fa-couch',
+        'stationary': 'fa-solid fa-pen',
+        'shoes': 'fa-solid fa-shoe-prints'
+      };
+      const lowerType = (type || '').toLowerCase();
+      return iconMap[lowerType] || 'fa-solid fa-gift';
     }
     async function accept(id){
       const res = await fetch(`/accept-donation/${id}`, { method: 'POST' });
@@ -81,7 +186,10 @@
       if(j.success){ fetchData(); } else { alert('Upload failed'); }
       return false;
     }
+    
+    // Initialize dashboard
     fetchData();
+    startAutoRefresh();
   </script>
 </body>
 </html>
