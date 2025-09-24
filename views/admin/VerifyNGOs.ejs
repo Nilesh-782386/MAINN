@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NGO Verification - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+      .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+        padding: 60px 0 40px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+      .main-container {
+        background: white;
+        margin: -30px auto 0;
+        max-width: 1200px;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 2;
+        min-height: calc(100vh - 120px);
+      }
+      .content-wrapper {
+        padding: 40px 30px;
+      }
+      .stats-row {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .stat-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        transition: transform 0.3s ease;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+      .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .stat-card p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
+      .ngo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+      .ngo-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .ngo-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .ngo-id {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 7px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .ngo-status {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: #f3f4f6;
+        color: #374151;
+        text-transform: capitalize;
+      }
+      .ngo-status.verified {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .ngo-status.suspended {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .ngo-status.applied {
+        background: #fef9c3;
+        color: #a16207;
+      }
+      .ngo-info {
+        margin-bottom: 10px;
+      }
+      .ngo-label {
+        font-weight: 600;
+        color: #667eea;
+        margin-right: 6px;
+      }
+      .action-row {
+        margin-top: 18px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn-status {
+        font-size: 0.95rem;
+        padding: 7px 18px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .btn-verify {
+        background: linear-gradient(135deg, #34d399, #059669);
+        color: white;
+      }
+      .btn-suspend {
+        background: linear-gradient(135deg, #f87171, #b91c1c);
+        color: white;
+      }
+      .btn-applied {
+        background: linear-gradient(135deg, #fbbf24, #a16207);
+        color: white;
+      }
+      .btn-status:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      @media (max-width: 768px) {
+        .ngo-grid {
+          grid-template-columns: 1fr;
+        }
+        .content-wrapper {
+          padding: 20px 8px;
+        }
+      }
+      /* Social Media Styles */
+      .social-media-section,
+      .certificate-section {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #e5e7eb;
+      }
+      .section-title {
+        font-size: 0.95rem;
+        color: #4b5563;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .social-links {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: rgb(154, 148, 148);
+        font-size: 1.1rem;
+        transition: transform 0.2s;
+        text-decoration: none;
+      }
+      .social-link:hover {
+        color: rgb(155, 155, 186);
+      }
+
+      .no-social,
+      .no-certificate {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-style: italic;
+      }
+      /* Certificate Styles */
+      .certificate-preview {
+        margin-top: 10px;
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .pdf-preview {
+        margin-top: 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .certificate-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+      }
+
+      .certificate-link:hover {
+        background: #e5e7eb;
+        transform: translateY(-1px);
+      }
+
+      .certificate-link i {
+        color: #ef4444;
+      }
+      .website-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+      .website-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+      .pdf-viewer {
+        margin-top: 10px;
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+      }
+      .filters-section .filter-input { margin-bottom: 0; }
+      .filters-section .btn-primary { padding: 12px 24px; border-radius: 10px; font-size: 1rem; }
+    </style>
+  </head>
+  <body>
+    <div class="hero-section">
+      <div class="container">
+        <h1><i class="fas fa-users"></i> NGO Applications Verification</h1>
+        <p>Admin panel to verify, suspend, or review NGO registrations.</p>
+      </div>
+    </div>
+    <div class="main-container">
+      <div class="content-wrapper">
+        <!-- Stats Section -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <h3><%= total %></h3>
+            <p>Total NGOs</p>
+          </div>
+          <div class="stat-card">
+            <h3><%= applied %></h3>
+            <p>Applied</p>
+          </div>
+          <div class="stat-card">
+            <h3><%= verified %></h3>
+            <p>Verified</p>
+          </div>
+          <div class="stat-card">
+            <h3><%= suspended %></h3>
+            <p>Suspended</p>
+          </div>
+        </div>
+        <!-- Filters Section -->
+        <% 
+          const citySet = new Set(); 
+          ngos.forEach(ngo => { if (ngo.city) citySet.add(ngo.city); }); 
+          const cityList = Array.from(citySet);
+          let cityOptions = '';
+          for (let i = 0; i < cityList.length; i++) {
+            let city = cityList[i];
+            let selected = filterCity === city ? 'selected' : '';
+            cityOptions += `<option value="${city}" ${selected}>${city.charAt(0).toUpperCase() + city.slice(1)}</option>`;
+          }
+        %>
+        <form class="filters-section" method="get" action="/admin/ngos" id="filterForm" style="margin-bottom: 30px;">
+          <div class="filter-controls" style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; align-items: center;">
+            <input
+              type="text"
+              class="filter-input"
+              placeholder="Search by name, city, or reg. number..."
+              id="searchInput"
+              name="search"
+              value="<%= typeof filterSearch !== 'undefined' ? filterSearch : '' %>"
+              style="padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background: white; min-width: 220px;"
+            />
+            <select class="filter-input" id="statusFilter" name="status" style="padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background: white;">
+              <option value="" <%= filterStatus === '' ? 'selected' : '' %>>All Status</option>
+              <option value="applied" <%= filterStatus === 'applied' ? 'selected' : '' %>>Applied</option>
+              <option value="verified" <%= filterStatus === 'verified' ? 'selected' : '' %>>Verified</option>
+              <option value="suspended" <%= filterStatus === 'suspended' ? 'selected' : '' %>>Suspended</option>
+            </select>
+            <select class="filter-input" id="cityFilter" name="city" style="padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background: white;">
+              <option value="" <%= filterCity === '' ? 'selected' : '' %>>All Cities</option>
+              <%- cityOptions %>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </form>
+        <!-- NGO Grid -->
+        <div class="ngo-grid">
+          <% if (ngos && ngos.length > 0) { %>
+            <% ngos.forEach(function(ngo) { %>
+              <div class="ngo-card">
+                <div class="card-header">
+                  <div class="ngo-id"><i class="fas fa-hashtag"></i> <%= ngo.id %></div>
+                  <div class="ngo-status <%= ngo.status %>">
+                    <%= ngo.status %>
+                  </div>
+                </div>
+                <div class="ngo-info"><span class="ngo-label">Name:</span> <%= ngo.ngo_name %></div>
+                <div class="ngo-info"><span class="ngo-label">Email:</span> <%= ngo.email %></div>
+                <div class="ngo-info"><span class="ngo-label">Phone:</span> <%= ngo.primary_phone %></div>
+                <div class="ngo-info"><span class="ngo-label">City:</span> <%= ngo.city %>, <%= ngo.state %></div>
+                <div class="ngo-info"><span class="ngo-label">Reg. No:</span> <%= ngo.registration_number %></div>
+                <div class="ngo-info"><span class="ngo-label">Address:</span> <%= ngo.address %></div>
+                
+                <!-- Website URL -->
+                <% if (ngo.website_url) { %>
+                <div class="ngo-info">
+                  <span class="ngo-label">Website:</span>
+                  <a href="<%= ngo.website_url %>" target="_blank" class="website-link">
+                    <i class="fas fa-globe"></i> Visit Website
+                  </a>
+                </div>
+                <% } %>
+
+                <!-- Social Media Section -->
+                <div class="social-media-section">
+                  <h6 class="section-title"><i class="fas fa-share-alt"></i> Social Media</h6>
+                  <div class="social-links">
+                    <% if (ngo.social_handle_url) { %>
+                      <a href="<%= ngo.social_handle_url %>" target="_blank" class="social-link">
+                        <span class="link-social"><%= ngo.social_handle_url %></span>
+                      </a>
+                    <% } %>
+                    <% if (!ngo.social_handle_url) { %>
+                      <span class="no-social">No social media handles provided</span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <!-- Certificate Section -->
+<div class="certificate-section">
+  <h6 class="section-title"><i class="fas fa-certificate"></i> Certificates</h6>
+
+  <% if (!ngo.certificate_url) { %>
+    <div class="no-certificate">Certificate not uploaded</div>
+
+  <% } else if (ngo.certificate_url.endsWith('.pdf')) { %>
+    <% const encodedUrl = ngo.certificate_url.replace(/'/g, "\\'"); %>
+    <div class="certificate-preview">
+      <button class="certificate-link" onclick="showPDFViewer(<%= ngo.id %>, '<%= encodedUrl %>')">
+        <i class="fas fa-file-pdf"></i> View Certificate
+      </button>
+
+      <div id="pdf-viewer-<%= ngo.id %>" class="pdf-viewer" style="display:none;">
+        <canvas id="pdf-canvas-<%= ngo.id %>"></canvas>
+        <button onclick="closePDFViewer(<%= ngo.id %>)" class="btn btn-sm btn-secondary mt-2">Close</button>
+      </div>
+
+      <a href="/admin/ngos/<%= ngo.id %>/certificate" target="_blank" class="certificate-link">
+        <i class="fas fa-download"></i> Download Certificate
+      </a>
+    </div>
+
+  <% } else if (ngo.certificate_url.endsWith('.jpg') || ngo.certificate_url.endsWith('.jpeg') || ngo.certificate_url.endsWith('.png')) { %>
+    <div class="certificate-preview">
+      <img src="/admin/ngos/<%= ngo.id %>/certificate" alt="Certificate Image" style="max-width:100%;max-height:300px;display:block;margin-bottom:10px;" />
+      <a href="/admin/ngos/<%= ngo.id %>/certificate" target="_blank" class="certificate-link">
+        <i class="fas fa-download"></i> Download Certificate
+      </a>
+    </div>
+
+  <% } else { %>
+    <div class="certificate-preview">
+      <a href="/admin/ngos/<%= ngo.id %>/certificate" target="_blank" class="certificate-link">
+        <i class="fas fa-download"></i> Download Certificate
+      </a>
+    </div>
+  <% } %>
+</div>
+
+                <div class="action-row">
+                  <button class="btn-status btn-verify" <%= ngo.status === 'verified' ? 'disabled' : '' %> onclick="updateStatus(<%= ngo.id %>, 'verified')">Verify</button>
+                  <button class="btn-status btn-suspend" <%= ngo.status === 'suspended' ? 'disabled' : '' %> onclick="updateStatus(<%= ngo.id %>, 'suspended')">Suspend</button>
+                  <button class="btn-status btn-applied" <%= ngo.status === 'applied' ? 'disabled' : '' %> onclick="updateStatus(<%= ngo.id %>, 'applied')">Set Applied</button>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <div class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <h3>No NGO applications found.</h3>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function updateStatus(id, status) {
+        fetch(`/admin/ngos/${id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.reload();
+            } else {
+              alert('Failed to update status');
+            }
+          });
+      }
+
+      function showPDFViewer(ngoId, url) {
+        const viewer = document.getElementById(`pdf-viewer-${ngoId}`);
+        viewer.style.display = 'block';
+
+        // Only load if not already loaded
+        if (!viewer.dataset.loaded) {
+          const canvas = document.getElementById(`pdf-canvas-${ngoId}`);
+          const loadingTask = window['pdfjsLib'].getDocument(`/admin/ngos/${ngoId}/certificate`);
+          loadingTask.promise.then(function(pdf) {
+            // Fetch the first page
+            pdf.getPage(1).then(function(page) {
+              const viewport = page.getViewport({ scale: 1.2 });
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+              const renderContext = {
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+              };
+              page.render(renderContext);
+            });
+          }, function (reason) {
+            canvas.parentNode.innerHTML = '<span style="color:red">Failed to load PDF.</span>';
+          });
+          viewer.dataset.loaded = 'true';
+        }
+      }
+
+      function closePDFViewer(ngoId) {
+        const viewer = document.getElementById(`pdf-viewer-${ngoId}`);
+        viewer.style.display = 'none';
+      }
+
+      // Auto-submit filters
+      document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('filterForm');
+        document.getElementById('statusFilter').addEventListener('change', function() {
+          filterForm.submit();
+        });
+        document.getElementById('cityFilter').addEventListener('change', function() {
+          filterForm.submit();
+        });
+        document.getElementById('searchInput').addEventListener('input', function() {
+          clearTimeout(window._searchTimeout);
+          window._searchTimeout = setTimeout(() => filterForm.submit(), 500);
+        });
+      });
+    </script>
+  </body>
+</html> 

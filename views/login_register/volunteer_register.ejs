@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Register</title>
+  <link rel="icon" href="/img/logo.svg" type="image/x-icons" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/volunteer.css">
+</head>
+<body class="volunteer-page">
+  <%- include("../partials/navbar.ejs", { user, ngo, volunteer }) %>
+  <div class="auth-hero">
+    <h1 class="auth-title">Create a Volunteer Account</h1>
+    <p class="auth-subtitle">Join CareConnect and start helping donors deliver to NGOs.</p>
+  </div>
+  <main class="auth-container">
+    <div class="auth-card">
+      <form method="post" action="/volunteer-register">
+        <div class="auth-grid">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required class="form-control">
+          </div>
+        </div>
+        <div class="auth-grid" style="margin-top:12px;">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="city">Location / City</label>
+            <input id="city" name="city" type="text" required class="form-control">
+          </div>
+        </div>
+        <div class="auth-grid" style="margin-top:12px;">
+          <div class="form-group">
+            <label for="vehicle_type">Vehicle Type</label>
+            <select id="vehicle_type" name="vehicle_type" class="form-control" required>
+              <option value="">Select vehicle</option>
+              <option value="2-wheeler">2-wheeler</option>
+              <option value="4-wheeler">4-wheeler</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required class="form-control">
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;">
+          <button type="submit" class="btn btn-primary">Register</button>
+          <span class="helper">Already have an account? <a class="link" href="/volunteer-login">Login</a></span>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
+
+

@@ -1,0 +1,212 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+body {
+  background-color: #e0eefe !important ;
+}
+
+/* nav bar */
+
+nav {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  background-color: white;
+  justify-content: space-between;
+  z-index: +45 !important;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky; /* Add this */
+  top: 0;
+}
+.logo {
+  margin-left: 4%;
+  margin-bottom: 0;
+  text-decoration: none;
+  color: #070505;
+  text-transform: uppercase;
+}
+.logo > img {
+  height: 90%;
+  width: 70%;
+}
+nav .nav-bar {
+  padding: 20px;
+  display: flex;
+}
+nav .nav-bar .nav-bar_item {
+  list-style-type: none;
+  padding: 0px 20px;
+}
+
+nav .nav-bar .nav-bar_item a {
+  position: relative;
+  display: block;
+  padding-bottom: 5px;
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #777777;
+  text-transform: uppercase;
+}
+.nav-bar_item > a:hover {
+  color: #52a1d3 !important;
+}
+.drop-item > a:hover {
+  color: #52a1d3 !important;
+}
+nav .nav-bar .nav-bar_item a:after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 3px;
+  bottom: 0;
+  left: 0;
+  background-color: #52a1d3;
+  transition: 0.2s ease-in-out;
+}
+
+nav .nav-bar .nav-bar_item a:hover:after {
+  width: 100%;
+  z-index: 100 !important;
+}
+
+.fa-brands,
+.fas {
+  font-size: 30px;
+}
+
+.topshape,
+.maindiv,
+.line,
+.addhead,
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  margin: 40px;
+  padding: 10px;
+  width: 120px;
+  border-radius: 10px;
+  background-color: #52a1d3;
+  font-size: 20px;
+  border: none;
+  margin-top: 40px;
+}
+
+.topimg {
+  width: 15vw;
+  padding-bottom: 40px;
+  padding-top: 40px;
+}
+.parentdiv {
+  width: 75vw;
+  height: 169vh;
+  background-color: #ffffff;
+  border-radius: 40px;
+  padding: 10vw;
+  padding-top: 4vw;
+  margin-left: 5vw;
+}
+
+.head {
+  font-weight: 450;
+  font-size: 25px;
+  letter-spacing: 1.5px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+.namediv,
+.phonenodiv,
+.citystate {
+  display: flex;
+  flex-direction: row;
+}
+
+label {
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.fname,
+.primaryno,
+.cityname {
+  margin-right: 10vw;
+}
+input {
+  width: 20vw;
+  height: 32px;
+  margin-top: 10px;
+  padding-left: 10px;
+  font-size: 16px;
+}
+
+.medinput {
+  width: 55vw;
+  height: 32px;
+}
+.emaildiv,
+.namediv,
+.alternateno,
+.flatno,
+.Addl1,
+.landmark,
+.citystate,
+.pincode,
+.note {
+  margin-bottom: 20px; /* Added space between divs */
+}
+.line {
+  margin: 18px;
+}
+hr {
+  width: 50%;
+}
+textarea {
+  resize: none;
+  margin-top: 15px;
+  padding: 10px;
+  font-size: 15px;
+}
+
+.note {
+  width: 100%; /* Ensures the container takes full width */
+}
+
+textarea {
+  width: 100%; /* Makes the textarea expand to fill the available space */
+  box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+body {
+  margin-bottom: 6vw;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  border: 1px solid #80b7e4;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #ffffff;
+     /* Change background color */
+  -webkit-transition: border-color 0.3s, box-shadow 0.3s;
+  -moz-transition: border-color 0.3s, box-shadow 0.3s;
+  -ms-transition: border-color 0.3s, box-shadow 0.3s;
+  -o-transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+  box-shadow: 0 0 20px rgba(74, 76, 78, 0.2);
+}
+
+button:hover {
+  background-color: #0056b3;
+}

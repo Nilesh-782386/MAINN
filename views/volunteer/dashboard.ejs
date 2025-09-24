@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Dashboard</title>
+  <link rel="icon" href="/img/logo.svg" type="image/x-icons" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/volunteer.css">
+</head>
+<body class="volunteer-page">
+  <%- include("../partials/navbar.ejs", { user, ngo, volunteer }) %>
+  <main class="container" style="padding: 24px;">
+    <h1>Volunteer Dashboard</h1>
+    <p>Welcome, <%= volunteer && volunteer.name ? volunteer.name : 'Volunteer' %>.</p>
+    <section class="dashboard-section">
+      <h2>Open Requests Near You</h2>
+      <div id="open-requests"></div>
+    </section>
+    <section class="dashboard-section">
+      <h2>Your Assignments</h2>
+      <div id="my-requests"></div>
+    </section>
+  </main>
+  <script>
+    async function fetchData() {
+      const res = await fetch('/volunteer-dashboard-data');
+      const data = await res.json();
+      renderOpen(data.availableDonations || []);
+      renderMine(data.myDonations || []);
+    }
+
+    function renderOpen(list){
+      const el = document.getElementById('open-requests');
+      if(!list.length){ el.innerHTML = '<p>No open requests.</p>'; return; }
+      el.innerHTML = list.map(r => card(r, true)).join('');
+    }
+    function renderMine(list){
+      const el = document.getElementById('my-requests');
+      if(!list.length){ el.innerHTML = '<p>No assignments yet.</p>'; return; }
+      el.innerHTML = list.map(r => card(r, false)).join('');
+    }
+    function card(r, canAccept){
+      const donor = r.donor_name ? (r.donor_name[0] + '***') : 'Donor';
+      const urgency = r.urgency || 'normal';
+      const badge = urgency === 'emergency' ? 'style="color:#b91c1c;font-weight:700;"' : '';
+      return `
+        <div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div><strong>${r.donation_type || r.type || 'Donation'}</strong> <span ${badge}>${urgency}</span></div>
+              <div>Donor: ${donor}</div>
+              <div>Pickup: ${r.address || r.pickup_address || r.city || ''}</div>
+              <div>NGO: ${r.ngo_name || '—'}</div>
+            </div>
+            <div>
+              ${canAccept ? `<button onclick="accept(${r.id})" class="btn btn-primary">Accept</button>` : ''}
+            </div>
+          </div>
+          ${!canAccept ? `
+          <div style="margin-top:8px;">
+            <form onsubmit="return uploadProof(event, ${r.id})" enctype="multipart/form-data">
+              <input type="file" name="proof" accept="image/*" required />
+              <button type="submit" class="btn btn-primary">Upload Proof & Mark Delivered</button>
+            </form>
+          </div>` : ''}
+        </div>`;
+    }
+    async function accept(id){
+      const res = await fetch(`/accept-donation/${id}`, { method: 'POST' });
+      const j = await res.json();
+      if(j.success){ fetchData(); } else { alert('Failed to accept'); }
+    }
+    async function uploadProof(e, id){
+      e.preventDefault();
+      const form = e.target;
+      const fd = new FormData(form);
+      const res = await fetch(`/volunteer/proof/${id}`, { method: 'POST', body: fd });
+      const j = await res.json();
+      if(j.success){ fetchData(); } else { alert('Upload failed'); }
+      return false;
+    }
+    fetchData();
+  </script>
+</body>
+</html>
+
+

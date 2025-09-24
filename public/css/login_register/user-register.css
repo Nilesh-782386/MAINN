@@ -1,0 +1,183 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  background: linear-gradient(to top right, #f3aab6, #a7d2fa) !important ;
+  height: 100vh;
+  margin: 0;
+}
+.signup1 {
+  height: 65vh !important;
+}
+
+.signup {
+  width: 80vw;
+  height: 80vh;
+  background-color: aliceblue;
+  border-radius: 25px;
+  display: flex;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 88vh;
+}
+
+.info {
+  width: 50%;
+  height: 100%;
+  background-color: white;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+}
+.img {
+  width: 50%;
+  height: 100%;
+  background-color: #f3ec87;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  overflow: hidden;
+
+  position: relative;
+
+  color: white; /* Set the desired text color */
+  font-size: 1.2rem; /* Set the desired text size */
+}
+.image {
+  height: 100%;
+  object-fit: contain;
+}
+
+.img::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top right,
+    rgba(120, 139, 158, 0.7),
+    rgba(218, 155, 153, 0.7)
+  ); /* Adjust colors and transparency */
+  pointer-events: none; /* Ensures the gradient doesn't interfere with image interactions */
+}
+
+.img .text-overlay {
+  position: absolute;
+  width: 80%;
+  top: 46%;
+  left: 40%;
+  transform: translate(-40%, -40%);
+  z-index: 1; /* Ensures the text is on top */
+  pointer-events: none; /* Ensures the text doesn't interfere with image interactions */
+}
+.head {
+  font-size: 1.8rem;
+  font-weight: 550;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: "Times New Roman";
+}
+
+.heading {
+  margin-bottom: 70px;
+}
+
+.halflogo {
+  width: 4rem;
+  margin: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 0.4rem;
+}
+.hlogodiv,
+.but,
+.gsignup {
+  display: flex;
+
+  align-items: center;
+  flex-direction: column;
+}
+
+input {
+  width: 80%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 0.6rem;
+}
+input:focus {
+  outline: none; /* Remove default outline */
+  cursor: text;
+}
+
+form {
+  margin-left: 5rem;
+}
+
+.fname,
+.lname,
+.emaildiv {
+  margin: 1rem;
+}
+.but {
+  margin-right: 4rem;
+}
+button {
+  padding: 5px;
+  width: 90%;
+  border: none;
+  background-color: #f36881;
+  color: #ffffff;
+}
+button:hover {
+  background-color: #e43152;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Darker shade of green on hover */
+}
+hr {
+  width: 50%;
+}
+
+.gsignup {
+  margin-top: 0px;
+}
+
+.footfa-brands {
+  font-size: 24px;
+  border: 1px solid black;
+  padding: 4px;
+  border-radius: 5px;
+}
+.footfa-brands:hover {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Darker shade of green on hover */
+}
+
+.fa-google {
+  margin-right: 20px;
+}
+
+.nomargin {
+  margin-bottom: 10px !important;
+}
+
+.already {
+  margin: 15px;
+  font-weight: 300;
+}
+.login {
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+}
+.otpbutton {
+  /* Removed OTP button style */
+  display: none;
+}
+.sendotp {
+  /* Removed sendotp style */
+  display: none;
+}

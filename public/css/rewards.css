@@ -1,0 +1,224 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(252, 245, 255) !important ;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.parent,
+.infodiv {
+  width: 70vw;
+  margin-bottom: 0px;
+  background-color: white;
+}
+
+.infodiv {
+  padding-top: 5vw;
+}
+
+.rlogo > img {
+  height: 45px;
+  margin: 20px;
+  /* width: 70%; */
+}
+
+.reward {
+  width: 20vw;
+  height: 27vw;
+  margin-top: 6px;
+  margin-left: 5vw;
+  position: relative;
+  margin-bottom: 0px;
+  transition: transform 0.3s ease;
+}
+.reward:hover {
+  transform: scale(1.02);
+  -webkit-transform: scale(1.02);
+  -moz-transform: scale(1.02);
+  -ms-transform: scale(1.02);
+  -o-transform: scale(1.02);
+}
+.rtwo {
+  margin-left: 6px !important;
+  background: linear-gradient(to right, #ff9a9e, #ffeaed) !important;
+}
+.rfour {
+  background: linear-gradient(to left, #ffffff, #fff68f) !important;
+}
+.rfive {
+  margin-left: 6px !important;
+  background: linear-gradient(to right, #e3c2fb, #ebfafc) !important;
+}
+.rthree {
+  margin-left: 6px !important;
+  background: linear-gradient(to left, #fafce1, #ffaf59) !important;
+}
+.rone {
+  background: linear-gradient(to left, #f5fde0, #b2fb8d);
+}
+.rsix {
+  margin-left: 6px !important;
+  background: linear-gradient(to left, #faf8f1, rgb(142, 255, 217)) !important;
+}
+
+.text {
+  margin-left: 3vw;
+  font-size: 15px;
+}
+span {
+  font-weight: 1000;
+  font-size: 25px;
+}
+
+.content {
+  width: 80%;
+  height: 80%;
+  background: url("your-image-url-here.jpg") no-repeat center center;
+  background-size: cover;
+}
+.rewardimg {
+  width: 10vw;
+}
+
+.rimgdiv {
+  position: relative;
+}
+
+.circular-piece {
+  position: absolute;
+
+  bottom: 0;
+  right: 0;
+}
+.circular-piece2 {
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+}
+.but {
+  margin: 2vw;
+  margin-top: 3vw;
+  font-size: 15px;
+}
+.but > button {
+  padding: 7px;
+  border-radius: 17px;
+  background-color: #4c3c3c;
+  color: #f5fde0;
+  width: 7vw;
+  letter-spacing: 1px;
+
+  border: 1.5px #ffffff solid;
+}
+
+.cost {
+  margin-bottom: 5vw;
+  margin-left: 2.5vw;
+}
+.cost > p {
+  font-weight: 500;
+  color: #1c2a31;
+}
+.glasses {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 7.5vw;
+  margin-bottom: 1.2vw;
+  margin-right: 1.2vw;
+}
+.swigcard {
+  margin-bottom: 0vw !important ;
+  margin-right: 0.6vw !important;
+}
+
+.parent {
+  display: flex;
+}
+
+.p1 {
+  padding-top: 3vw;
+}
+
+.p2 {
+  padding-bottom: 3vw;
+}
+
+.mainrewardcard {
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+}
+
+.usersp {
+  width: 16vw;
+  border-radius: 5px;
+  background-color: #addfec;
+  margin: 2vw;
+  margin-top: 1vw;
+}
+.info {
+  width: 74%;
+}
+.uppara {
+  display: flex;
+  flex-direction: row;
+  margin: 3vw;
+}
+.mid {
+  text-align: center;
+  font-weight: 400;
+}
+
+.sptit {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 2vw;
+}
+.pointsno {
+  background-color: #ebeaea;
+  text-align: center;
+  height: 70%;
+  padding-top: 3vw;
+  font-size: 35px;
+  font-weight: 200;
+}
+
+.artistic-heading {
+  /* Use the desired font */
+  font-weight: 350; /* Adjust font weight as needed */
+  font-size: 36px; /* Adjust font size as needed */
+  position: relative;
+  display: block; /* Change display property to block */
+
+  margin: 0 auto; /* Center horizontally */
+  text-align: center; /* Center-align the text */
+  margin-bottom: 20px; /* Adjust spacing as needed */
+}
+
+.artistic-heading::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px; /* Adjust distance from text */
+  width: 120px; /* Adjust width of the underline */
+  height: 3px; /* Adjust thickness of the underline */
+  background: linear-gradient(to right, #ff6b6b, #ffe66d); /* Gradient colors */
+  border-radius: 10px; /* Adjust as needed */
+  transform: translateX(-50%);
+}
+
+.p2 {
+  padding-bottom: 5vw;
+}

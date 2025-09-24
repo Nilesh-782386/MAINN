@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recent Donation Requests</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .hero-section {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.9),
+          rgba(118, 75, 162, 0.9)
+        );
+        padding: 80px 0 60px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .hero-section h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-section p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .main-container {
+        background: white;
+        margin: -40px auto 0;
+        max-width: 1400px;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 2;
+        min-height: calc(100vh - 200px);
+      }
+
+      .content-wrapper {
+        padding: 60px 40px;
+      }
+
+      .stats-row {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 50px;
+        flex-wrap: wrap;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 25px 35px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-card h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .stat-card p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .filters-section {
+        background: #f8fafc;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .filter-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-input {
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+        background: white;
+      }
+
+      .filter-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .donation-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+      }
+
+      .donation-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .donation-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .donation-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+      }
+
+      .donation-id {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .donation-status {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .item-badge {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+      }
+
+      .item-badge:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.05);
+      }
+
+      .item-badge i {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .item-badge .item-name {
+        font-weight: 500;
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+      }
+
+      .item-badge .item-count {
+        font-size: 0.9rem;
+        color: #667eea;
+      }
+
+      .item-badge:hover .item-count {
+        color: white;
+      }
+
+      .contact-info {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .contact-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+      }
+
+      .contact-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .contact-icon {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .contact-text {
+        flex: 1;
+        font-size: 0.95rem;
+        color: #374151;
+      }
+
+      .contact-label {
+        font-weight: 500;
+        color: #111827;
+      }
+
+      .pickup-info {
+        background: linear-gradient(135deg, #fef3c7, #fbbf24);
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-top: 15px;
+        border-left: 4px solid #f59e0b;
+      }
+
+      .pickup-info i {
+        color: #d97706;
+        margin-right: 8px;
+      }
+
+      .note-section {
+        background: #eff6ff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-top: 15px;
+        border-left: 4px solid #3b82f6;
+      }
+
+      .note-section i {
+        color: #2563eb;
+        margin-right: 8px;
+      }
+
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+      }
+
+      .pagination {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+      }
+
+      .pagination .page-link {
+        color: #667eea;
+        border: none;
+        padding: 10px 15px;
+        margin: 0 5px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .pagination .page-link:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
+
+      .pagination .page-item.disabled .page-link {
+        color: #9ca3af;
+        background: #f9fafb;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #6b7280;
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #d1d5db;
+      }
+
+      .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #374151;
+      }
+
+      @media (max-width: 768px) {
+        .hero-section h1 {
+          font-size: 2rem;
+        }
+
+        .content-wrapper {
+          padding: 40px 20px;
+        }
+
+        .donation-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .stats-row {
+          gap: 15px;
+        }
+
+        .stat-card {
+          padding: 20px 25px;
+        }
+
+        .items-grid {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: 10px;
+        }
+
+        .filter-controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-input {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .donation-card {
+          padding: 20px;
+        }
+
+        .contact-info {
+          padding: 15px;
+        }
+
+        .items-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-section">
+      <div class="container">
+        <h1><i class="fas fa-heart"></i> Recent Donation Requests</h1>
+        <p>
+          Connecting generous hearts with those in need. Together, we make a
+          difference.
+        </p>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="content-wrapper">
+        <!-- Stats Section -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <h3 id="totalDonations"><%= totalRequests %></h3>
+            <p>Total Requests</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="activeDonations"><%= activeCount %></h3>
+            <p>Active</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="completedDonations"><%= completedCount %></h3>
+            <p>Completed</p>
+          </div>
+        </div>
+
+        <!-- Filters Section -->
+        <form class="filters-section" method="get" action="/all-donations" id="filterForm">
+          <div class="filter-controls">
+            <input
+              type="text"
+              class="filter-input"
+              placeholder="Search by name or location..."
+              id="searchInput"
+              name="search"
+              value="<%= filterSearch %>"
+            />
+            <select class="filter-input" id="statusFilter" name="status">
+              <!-- <option value="" <%= filterStatus === '' ? 'selected' : '' %>>All Status</option> -->
+              <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+              <option value="completed" <%= filterStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+              <option value="cancelled" <%= filterStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+            <select class="filter-input" id="cityFilter" name="city">
+              <option value="" <%= filterCity === '' ? 'selected' : '' %>>All Cities</option>
+              <option value="mumbai" <%= filterCity === 'mumbai' ? 'selected' : '' %>>Mumbai</option>
+              <option value="pune" <%= filterCity === 'pune' ? 'selected' : '' %>>Pune</option>
+              <option value="nagpur" <%= filterCity === 'nagpur' ? 'selected' : '' %>>Nagpur</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </form>
+
+        <!-- Donations Grid -->
+        <div class="donation-grid" id="donationsGrid">
+          <% if (donations && donations.length > 0) { %> <%
+          donations.forEach(function(donation, idx) { %>
+          <div class="donation-card">
+            <div class="card-header">
+              <div class="donation-id">
+                <i class="fas fa-hashtag"></i> <%=
+                donation.id.toString().padStart(3, '0') %>
+              </div>
+              <div class="donation-status">
+                <% if (donation.status === 'completed') { %>
+                  <i class="fas fa-check-circle"></i> Completed
+                <% } else if (donation.status === 'cancelled') { %>
+                  <i class="fas fa-times-circle" style="color:#dc3545;"></i> Cancelled
+                <% } else { %>
+                  <i class="fas fa-clock"></i> Pending
+                <% } %>
+              </div>
+            </div>
+            <div class="items-grid">
+              <% if (donation.books && donation.books > 0) { %>
+              <div class="item-badge">
+                <i class="fas fa-book"></i>
+                <div class="item-name">Books</div>
+                <div class="item-count"><%= donation.books %></div>
+              </div>
+              <% } %> <% if (donation.clothes && donation.clothes > 0) { %>
+              <div class="item-badge">
+                <i class="fas fa-tshirt"></i>
+                <div class="item-name">Clothes</div>
+                <div class="item-count"><%= donation.clothes %></div>
+              </div>
+              <% } %> <% if (donation.grains && donation.grains !== '0' &&
+              donation.grains) { %>
+              <div class="item-badge">
+                <i class="fas fa-seedling"></i>
+                <div class="item-name">Grains</div>
+                <div class="item-count"><%= donation.grains %></div>
+              </div>
+              <% } %> <% if (donation.footwear && donation.footwear > 0) { %>
+              <div class="item-badge">
+                <i class="fas fa-shoe-prints"></i>
+                <div class="item-name">Footwear</div>
+                <div class="item-count"><%= donation.footwear %></div>
+              </div>
+              <% } %> <% if (donation.toys && donation.toys > 0) { %>
+              <div class="item-badge">
+                <i class="fas fa-gamepad"></i>
+                <div class="item-name">Toys</div>
+                <div class="item-count"><%= donation.toys %></div>
+              </div>
+              <% } %> <% if (donation.schoolsupplies && donation.schoolsupplies
+              > 0) { %>
+              <div class="item-badge">
+                <i class="fas fa-pencil-alt"></i>
+                <div class="item-name">Supplies</div>
+                <div class="item-count"><%= donation.schoolsupplies %></div>
+              </div>
+              <% } %>
+            </div>
+            <div class="contact-info">
+              <div class="contact-row">
+                <div class="contact-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="contact-text">
+                  <div class="contact-label">Name</div>
+                  <%= donation.fname %> <%= donation.lname %>
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="contact-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-text">
+                  <div class="contact-label">Email</div>
+                  <%= donation.email %>
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="contact-icon">
+                  <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-text">
+                  <div class="contact-label">Phone</div>
+                  <%= donation.phone %><% if (donation.phone2) { %> / <%=
+                  donation.phone2 %><% } %>
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="contact-icon">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="contact-text">
+                  <div class="contact-label">Address</div>
+                  <%= donation.flat %>, <%= donation.addline %>, <% if
+                  (donation.land) { %><%= donation.land %>, <% } %><%=
+                  donation.city %>, <%= donation.state %> - <%= donation.pincode
+                  %>
+                </div>
+              </div>
+            </div>
+            <% if (donation.pickup_date && donation.pickup_time) { %>
+            <div class="pickup-info">
+              <i class="fas fa-truck"></i>
+              <strong>Pickup Scheduled:</strong> <%= donation.pickup_date %> at
+              <%= donation.pickup_time %>
+            </div>
+            <% } %> <% if (donation.optnote) { %>
+            <div class="note-section">
+              <i class="fas fa-sticky-note"></i>
+              <strong>Note:</strong> <%= donation.optnote %>
+            </div>
+            <% } %>
+            <% if (donation.status === 'pending') { %>
+              <div class="mt-3 d-flex gap-2">
+                <form onsubmit="return markCompleted(event, '<%= donation.id %>')">
+                  <button type="submit" class="btn btn-success btn-sm">Mark as Completed</button>
+                </form>
+                <form onsubmit="return cancelDonation(event, '<%= donation.id %>')">
+                  <button type="submit" class="btn btn-danger btn-sm">Cancel Request</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+          <% }); %> <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>No donation requests found.</h3>
+            <p>Be the first to make a difference!</p>
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <nav aria-label="Donation pagination">
+            <ul class="pagination">
+              <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                <% if (currentPage === 1) { %>
+                <span class="page-link">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </span>
+                <% } else { %>
+                <a
+                  class="page-link"
+                  href="/all-donations?page=<%= currentPage - 1 %>"
+                >
+                  <i class="fas fa-chevron-left"></i> Previous
+                </a>
+                <% } %>
+              </li>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <% if (currentPage === i) { %>
+                <span class="page-link"><%= i %></span>
+                <% } else { %>
+                <a class="page-link" href="/all-donations?page=<%= i %>"
+                  ><%= i %></a
+                >
+                <% } %>
+              </li>
+              <% } %>
+              <li
+                class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>"
+              >
+                <% if (currentPage === totalPages) { %>
+                <span class="page-link">
+                  Next <i class="fas fa-chevron-right"></i>
+                </span>
+                <% } else { %>
+                <a
+                  class="page-link"
+                  href="/all-donations?page=<%= currentPage + 1 %>"
+                >
+                  Next <i class="fas fa-chevron-right"></i>
+                </a>
+                <% } %>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function markCompleted(event, id) {
+        event.preventDefault();
+        fetch(`/donations/${id}/complete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.reload();
+            } else {
+              alert('Failed to mark as completed');
+            }
+          });
+        return false;
+      }
+      function cancelDonation(event, id) {
+        event.preventDefault();
+        fetch(`/donations/${id}/cancel`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.reload();
+            } else {
+              alert('Failed to cancel donation');
+            }
+          });
+        return false;
+      }
+      // Auto-submit filters
+      document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('filterForm');
+        document.getElementById('statusFilter').addEventListener('change', function() {
+          filterForm.submit();
+        });
+        document.getElementById('cityFilter').addEventListener('change', function() {
+          filterForm.submit();
+        });
+        document.getElementById('searchInput').addEventListener('input', function() {
+          // Debounce for search input
+          clearTimeout(window._searchTimeout);
+          window._searchTimeout = setTimeout(() => filterForm.submit(), 500);
+        });
+      });
+    </script>
+  </body>
+</html>

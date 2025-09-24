@@ -1,0 +1,36 @@
+<head>
+  <link rel="stylesheet" href="css/navbar.css" />
+</head>
+
+<nav>
+  <a class="logo" href="/">
+    <img src="img/logo-nav.svg" alt="NGO Logo" />
+  </a>
+  <ul class="nav-bar">
+    <li class="nav-bar_item"><a href="/about">About</a></li>
+    <li class="nav-bar_item">
+      <a href="/rewards">Rewards</a>
+    </li>
+    <li class="nav-bar_item">
+      <a href="/contact">Contact</a>
+    </li>
+    <% if (!user && !ngo && !volunteer) { %>
+    <li class="nav-bar_item"><a href="/ngo-login">NGO Login</a></li>
+    <li class="nav-bar_item"><a href="/user-login">User Login</a></li>
+    <li class="nav-bar_item"><a href="/volunteer-login">Volunteer</a></li>
+    <% } else { %>
+      <% if (user) { %>
+      <li class="nav-bar_item"><a href="/user">My Account</a></li>
+      <% } %>
+      <% if (ngo) { %>
+      <li class="nav-bar_item"><a href="/ngo-dashboard">NGO Dashboard</a></li>
+      <% } %>
+      <% if (volunteer) { %>
+      <li class="nav-bar_item"><a href="/volunteer-dashboard">Volunteer Dashboard</a></li>
+      <li class="nav-bar_item"><a href="/volunteer-logout">Logout</a></li>
+      <% } else { %>
+      <li class="nav-bar_item"><a href="/logout">Logout</a></li>
+      <% } %>
+    <% } %>
+  </ul>
+</nav>

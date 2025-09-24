@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGO Dashboard</title>
+  <link rel="icon" href="/img/logo.svg" type="image/x-icons" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/volunteer.css">
+</head>
+<body>
+  <%- include("../partials/navbar.ejs", { user, ngo, volunteer }) %>
+  <main class="container" style="padding: 24px;">
+    <h1>NGO Dashboard</h1>
+
+    <section class="dashboard-section">
+      <h2>Create Donation Request</h2>
+      <form method="post" action="/ngo/requests">
+        <div class="form-group" style="margin: 12px 0;">
+          <label for="title">Title</label>
+          <input id="title" name="title" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin: 12px 0;">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="margin: 12px 0;">
+          <label for="city">City</label>
+          <input id="city" name="city" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Open Requests</h2>
+      <% if (!open || open.length === 0) { %>
+        <p>No open requests.</p>
+      <% } else { %>
+        <% open.forEach(r => { %>
+          <div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0;">
+            <div><strong><%= r.title || r.donation_type || 'Donation' %></strong></div>
+            <div><%= r.description || '' %></div>
+            <div>City: <%= r.city || '' %></div>
+            <div>Status: <%= r.status %></div>
+          </div>
+        <% }) %>
+      <% } %>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Assigned Requests</h2>
+      <% if (!assigned || assigned.length === 0) { %>
+        <p>No assigned requests.</p>
+      <% } else { %>
+        <% assigned.forEach(r => { %>
+          <div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0;">
+            <div><strong><%= r.title || r.donation_type || 'Donation' %></strong></div>
+            <div>City: <%= r.city || '' %></div>
+            <div>Status: <%= r.status %></div>
+            <div>Volunteer: <%= r.volunteer_name || '—' %> (<%= r.volunteer_phone || '—' %>)</div>
+          </div>
+        <% }) %>
+      <% } %>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Delivered Requests</h2>
+      <% if (!delivered || delivered.length === 0) { %>
+        <p>No delivered requests.</p>
+      <% } else { %>
+        <% delivered.forEach(r => { %>
+          <div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0;display:flex;gap:12px;align-items:flex-start;">
+            <div style="flex:1;">
+              <div><strong><%= r.title || r.donation_type || 'Donation' %></strong></div>
+              <div>City: <%= r.city || '' %></div>
+              <div>Status: <%= r.status %></div>
+              <div>Volunteer: <%= r.volunteer_name || '—' %> (<%= r.volunteer_phone || '—' %>)</div>
+            </div>
+            <div>
+              <% if (r.proof_image) { %>
+                <img src="<%= r.proof_image %>" alt="proof" style="max-width:200px;border-radius:8px;border:1px solid #e5e7eb;" />
+              <% } else { %>
+                <span>No proof uploaded</span>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>
+
+
