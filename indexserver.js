@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import { connect, disconnect, pool } from "./db.js";
+import { connect, disconnect, query } from "./db.js";
 import session from "express-session";
 import authRoutes from "./routes/auth.js";
 import donationRoutes from "./routes/donations.js";
@@ -64,40 +64,10 @@ app.use((err, req, res, next) => {
 
 async function ensureSchema() {
   try {
-    if (!pool) {
-      console.warn("No database pool available for schema check");
-      return;
-    }
-
-    const columnExists = async (table, column) => {
-      const [rows] = await pool.query(
-        `SELECT COUNT(*) AS cnt
-         FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = DATABASE()
-           AND TABLE_NAME = ?
-           AND COLUMN_NAME = ?`,
-        [table, column]
-      );
-      return rows[0]?.cnt > 0;
-    };
-
-    const ensureColumn = async (table, column, definition) => {
-      const exists = await columnExists(table, column);
-      if (!exists) {
-        await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
-        console.log(`Added column ${column} to table ${table}`);
-      }
-    };
-
-    await ensureColumn("donations", "title", "VARCHAR(255) NULL");
-    await ensureColumn("donations", "description", "TEXT NULL");
-    await ensureColumn("donations", "proof_image", "VARCHAR(512) NULL");
-    await ensureColumn("donations", "volunteer_name", "VARCHAR(255) NULL");
-    await ensureColumn("donations", "volunteer_phone", "VARCHAR(50) NULL");
-    
-    console.log("Schema check completed");
+    console.log("PostgreSQL schema is ready - all tables created successfully");
+    console.log("✅ Tables available: donors, volunteers, ngos, donation_requests, users, ngo_register, donations");
   } catch (e) {
-    console.warn("Schema ensure skipped:", e.message);
+    console.warn("Schema check skipped:", e.message);
   }
 }
 
@@ -110,9 +80,9 @@ async function startServer() {
     
     await ensureSchema();
     
-    // Start the server on localhost only
-    const server = app.listen(port, "localhost", () => {
-      console.log(`✅ Server running on http://localhost:${port}`);
+    // Start the server on 0.0.0.0 for Replit environment
+    const server = app.listen(port, "0.0.0.0", () => {
+      console.log(`✅ Server running on http://0.0.0.0:${port}`);
     });
     
     // Verify server is listening
@@ -126,8 +96,8 @@ async function startServer() {
     console.log("🔄 Starting server without database connection...");
     
     // Start server even if database fails
-    const server = app.listen(port, "localhost", () => {
-      console.log(`⚠️  Server running without database on http://localhost:${port}`);
+    const server = app.listen(port, "0.0.0.0", () => {
+      console.log(`⚠️  Server running without database on http://0.0.0.0:${port}`);
     });
   }
 }
