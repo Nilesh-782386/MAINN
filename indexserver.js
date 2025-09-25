@@ -4,18 +4,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connect, disconnect, pool } from "./db.js";
 import session from "express-session";
-import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import donationRoutes from "./routes/donations.js";
 import ngoRoutes from "./routes/ngo.js";
 import generalRoutes from "./routes/general.js";
-import volunteerRoutes from "./routes/volunteer.js"; // ✅ ADDED
-import volunteerDashboardRoutes from "./routes/volunteer-dashboard.js"; // ✅ ADDED
-dotenv.config();
+import volunteerRoutes from "./routes/volunteer.js";
+import volunteerDashboardRoutes from "./routes/volunteer-dashboard.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 // Set view engine to EJS
 app.set("view engine", "ejs");
@@ -31,7 +29,7 @@ app.use(express.json());
 // Session middleware
 app.use(
   session({
-    secret: process.env.SECRET_KEY || "default-secret-key-for-development-12345",
+    secret: "default-secret-key-for-development-12345",
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -42,11 +40,11 @@ app.use(
   })
 );
 
-// ✅ UPDATED: Make session variables available to all templates (ADDED VOLUNTEER)
+// Make session variables available to all templates
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.ngo = req.session.ngo || null;
-  res.locals.volunteer = req.session.volunteer || null; // ✅ ADDED THIS LINE
+  res.locals.volunteer = req.session.volunteer || null;
   next();
 });
 
@@ -55,8 +53,8 @@ app.use(authRoutes);
 app.use(donationRoutes);
 app.use(ngoRoutes);
 app.use(generalRoutes);
-app.use(volunteerRoutes); // ✅ ADDED
-app.use(volunteerDashboardRoutes); // ✅ ADDED
+app.use(volunteerRoutes);
+app.use(volunteerDashboardRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -66,29 +64,81 @@ app.use((err, req, res, next) => {
 
 async function ensureSchema() {
   try {
-    await pool.query(`
-      ALTER TABLE donations
-        ADD COLUMN IF NOT EXISTS title VARCHAR(255) NULL,
-        ADD COLUMN IF NOT EXISTS description TEXT NULL,
-        ADD COLUMN IF NOT EXISTS proof_image VARCHAR(512) NULL,
-        ADD COLUMN IF NOT EXISTS volunteer_name VARCHAR(255) NULL,
-        ADD COLUMN IF NOT EXISTS volunteer_phone VARCHAR(50) NULL;
-    `);
+    if (!pool) {
+      console.warn("No database pool available for schema check");
+      return;
+    }
+
+    const columnExists = async (table, column) => {
+      const [rows] = await pool.query(
+        `SELECT COUNT(*) AS cnt
+         FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE()
+           AND TABLE_NAME = ?
+           AND COLUMN_NAME = ?`,
+        [table, column]
+      );
+      return rows[0]?.cnt > 0;
+    };
+
+    const ensureColumn = async (table, column, definition) => {
+      const exists = await columnExists(table, column);
+      if (!exists) {
+        await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+        console.log(`Added column ${column} to table ${table}`);
+      }
+    };
+
+    await ensureColumn("donations", "title", "VARCHAR(255) NULL");
+    await ensureColumn("donations", "description", "TEXT NULL");
+    await ensureColumn("donations", "proof_image", "VARCHAR(512) NULL");
+    await ensureColumn("donations", "volunteer_name", "VARCHAR(255) NULL");
+    await ensureColumn("donations", "volunteer_phone", "VARCHAR(50) NULL");
+    
+    console.log("Schema check completed");
   } catch (e) {
     console.warn("Schema ensure skipped:", e.message);
   }
 }
 
-app.listen(port, "0.0.0.0", async () => {
+// Start server with better error handling
+async function startServer() {
   try {
+    console.log("Attempting to connect to database...");
     await connect();
+    console.log("✅ Connected to the database");
+    
     await ensureSchema();
-    console.log(`Server running on http://0.0.0.0:${port}`);
+    
+    // Start the server on localhost only
+    const server = app.listen(port, "localhost", () => {
+      console.log(`✅ Server running on http://localhost:${port}`);
+    });
+    
+    // Verify server is listening
+    server.on('listening', () => {
+      const address = server.address();
+      console.log(`✅ Server successfully listening on port: ${address.port}`);
+    });
+    
   } catch (error) {
-    console.error("Database connection failed:", error);
-    console.log("Server starting without database connection...");
-    console.log(`Server running on http://0.0.0.0:${port}`);
+    console.error("❌ Database connection failed:", error.message);
+    console.log("🔄 Starting server without database connection...");
+    
+    // Start server even if database fails
+    const server = app.listen(port, "localhost", () => {
+      console.log(`⚠️  Server running without database on http://localhost:${port}`);
+    });
   }
+}
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
 const gracefulShutdown = async () => {
@@ -99,3 +149,6 @@ const gracefulShutdown = async () => {
 
 process.on("SIGTERM", gracefulShutdown);
 process.on("SIGINT", gracefulShutdown);
+
+// Start the server
+startServer();
