@@ -11,7 +11,9 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000,
+  acquireTimeoutMillis: 10000,
+  createTimeoutMillis: 10000,
 });
 
 // Method to connect to the database

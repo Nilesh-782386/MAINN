@@ -1,0 +1,154 @@
+<!-- Dashboard Sidebar Navigation -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h4><i class="fas fa-heart text-danger"></i> CareConnect</h4>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <% if (user && user.ngo_name) { %>
+                <!-- NGO Navigation -->
+                <li class="nav-item">
+                    <a href="/dashboard/ngo" class="nav-link <%= currentPage === 'ngo-dashboard' ? 'active' : '' %>">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>NGO Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/ngo/requests" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create Request</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/ngo/verification" class="nav-link">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Verification</span>
+                    </a>
+                </li>
+            <% } else if (volunteer) { %>
+                <!-- Volunteer Navigation -->
+                <li class="nav-item">
+                    <a href="/dashboard/volunteer" class="nav-link <%= currentPage === 'volunteer-dashboard' ? 'active' : '' %>">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Volunteer Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/volunteer/available" class="nav-link">
+                        <i class="fas fa-list"></i>
+                        <span>Available Requests</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/volunteer/my-requests" class="nav-link">
+                        <i class="fas fa-tasks"></i>
+                        <span>My Requests</span>
+                    </a>
+                </li>
+            <% } else if (user) { %>
+                <!-- Donor Navigation -->
+                <li class="nav-item">
+                    <a href="/dashboard/donor" class="nav-link <%= currentPage === 'donor-dashboard' ? 'active' : '' %>">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Donor Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/donate" class="nav-link">
+                        <i class="fas fa-heart"></i>
+                        <span>Make Donation</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/donate/history" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        <span>Donation History</span>
+                    </a>
+                </li>
+            <% } %>
+            
+            <!-- Common Navigation -->
+            <li class="nav-divider"></li>
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/about" class="nav-link">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/contact" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </a>
+            </li>
+            
+            <!-- User Actions -->
+            <li class="nav-divider"></li>
+            <% if (user || volunteer || ngo) { %>
+                <li class="nav-item">
+                    <a href="/profile" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link text-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            <% } else { %>
+                <li class="nav-item">
+                    <a href="/user-login" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/register-user" class="nav-link">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Register</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+    
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <% if (user && user.ngo_name) { %>
+                <div class="user-avatar bg-primary">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="user-details">
+                    <h6><%= user.ngo_name %></h6>
+                    <small class="text-muted">NGO</small>
+                </div>
+            <% } else if (volunteer) { %>
+                <div class="user-avatar bg-success">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div class="user-details">
+                    <h6><%= volunteer.fullname || volunteer.name %></h6>
+                    <small class="text-muted">Volunteer</small>
+                </div>
+            <% } else if (user) { %>
+                <div class="user-avatar bg-info">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="user-details">
+                    <h6><%= user.fullname %></h6>
+                    <small class="text-muted">Donor</small>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>

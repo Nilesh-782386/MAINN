@@ -10,6 +10,7 @@ import ngoRoutes from "./routes/ngo.js";
 import generalRoutes from "./routes/general.js";
 import volunteerRoutes from "./routes/volunteer.js";
 import volunteerDashboardRoutes from "./routes/volunteer-dashboard.js";
+import dashboardRoutes from "./routes/dashboard.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -55,6 +56,7 @@ app.use(ngoRoutes);
 app.use(generalRoutes);
 app.use(volunteerRoutes);
 app.use(volunteerDashboardRoutes);
+app.use(dashboardRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
