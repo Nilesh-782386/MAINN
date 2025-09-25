@@ -1,5 +1,5 @@
 import express from "express";
-import { pool } from "../db.js";
+import { query } from "../db.js";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import fs from "fs";
@@ -36,11 +36,9 @@ const saltRounds = 10;
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    if (rows.length > 0) {
-      const user = rows[0];
+    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
       const valid = await bcrypt.compare(password, user.password);
       if (valid) {
         req.session.user = user;
@@ -65,10 +63,10 @@ router.post("/login", async (req, res) => {
 router.post("/ngo-login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const query = "SELECT * FROM ngo_register WHERE email = ?";
-    const [rows] = await pool.query(query, [email]);
-    if (rows.length > 0) {
-      const ngo = rows[0];
+    const sqlQuery = "SELECT * FROM ngo_register WHERE email = $1";
+    const result = await query(sqlQuery, [email]);
+    if (result.rows.length > 0) {
+      const ngo = result.rows[0];
       if (ngo.registration_number === password) {
         req.session.user = ngo; // Use user session for consistency
         return res.redirect("/"); // Redirect instead of render
